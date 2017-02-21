@@ -14,12 +14,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import webapp2
+import webapp2, jinja2, os, re
+from google.appengine.ext import db
+from models import User
+#import hashutils
 
-class MainHandler(webapp2.RequestHandler):
+template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape = True)
+
+class SiteHandler(webapp2.RequestHandler):
+	def get_user_by_name(self, username):
+		user = db.GqlQuery("SELECT * FROM User WHERE username=%s" % username)
+		if user:
+			return user.get()
+	
+	def login_user(self, user):
+		pass
+		
+	def logout_user(self, user):
+		pass
+	
+
+class IndexHandler(SiteHandler):
     def get(self):
         self.response.write('Hello world!')
+		
+class ViewUserHandler(SiteHandler):
+	""" 
+	Handles all requests to view a user's profile.
+	Shows a public profile if not logged in. If logged in, give the user options to
+	edit their profile.
+	"""
+	def get(self, username=""):
+		self.response.write("Custom route is working! User profile to be displayed: %s" % username)
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', IndexHandler),
+	webapp2.Route('/u/<username:[a-zA-Z0-9_-]{3,20}>', ViewUserHandler)
 ], debug=True)
