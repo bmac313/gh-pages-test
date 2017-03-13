@@ -5,6 +5,8 @@
 # A handful of hashing utility functions
 # to help us encrypt and decrypt sensitive user info
 #
+# Originally created by LaunchCode
+#
 #####################################################
 
 import random, string, hashlib, hmac
